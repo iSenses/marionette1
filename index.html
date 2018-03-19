@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Marionette Contact Manager</title>
+  <!-- <link rel="stylesheet" href="./assets/css/bootstrap.css"> -->
+  <!-- <link rel="stylesheet" href="./assets/css/application.css"> -->
+</head>
+<body>
+  <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container"><span class="brand">Contact Manager</span></div>
+    </div>
+  </div>  
+  <div id="main-region" class="container">
+    <p>
+      Here is static content in the web page. 
+      I will notice that it gets replaced by our app as soon as we start it.
+    </p>
+  </div>
+
+  <script src="./assets/js/vendor/jquery.js"></script>
+  <script src="./assets/js/vendor/json2.js"></script>
+  <script src="./assets/js/vendor/underscore.js"></script>
+  <script src="./assets/js/vendor/backbone.js"></script>
+  <script src="./assets/js/vendor/backbone.marionette.js"></script>
+  <!-- <script>document.getElementById("se").innerHTML+="RUNOOB";</script> -->
+
+  <script type="text/template" id="static-template">
+    <p>This is text that also was rendered by our Marionette app.</p>
+  </script>
+  <script type="text/template" id="different-static-template">
+    <p>Text from a different template...</p>
+  </script>
+  <script type="text/template" id="list-item-template">
+    <li>One item</li>
+  </script>
+  <script type="text/template" id="contact-template">
+    <p><%= firstName %> <%= lastName %></p>
+  </script>
+
+
+  <script>
+    var ContactManager = new Marionette.Application();
+    //ContactManager.on("initialize:after", function () {
+      // document.getElementById("se").innerHTML += "<p>ContactManager has started</p>";
+      //console.log("This is fun.");
+    //});
+    ContactManager.addRegions({
+      mainRegion: "#main-region"
+    });
+    ContactManager.StaticView = Marionette.ItemView.extend({
+      id: "static-view",
+      tagName: "ul",
+      className: "intruction",
+      template: "#list-item-template"
+    });
+
+    ContactManager.Contact = Backbone.Model.extend({
+      defaults: {
+        firstName: "",
+        lastName: "",
+        phoneNumber: "No phone number!"
+      }
+    });
+    ContactManager.ContactView = Marionette.ItemView.extend({
+      template: "#contact-template",
+      events: {
+        "click p": "alertPhoneNumber"
+      },
+      alertPhoneNumber: function () {
+        alert(this.model.escape("phoneNumber"));
+      }
+    });
+
+    ContactManager.on("before:start", function () {
+      // var staticView = new ContactManager.StaticView({
+        // template: "#different-static-template"
+      // });
+      // var staticView = new ContactManager.StaticView();
+      var alice = new ContactManager.Contact({
+        firstName: "Alice",
+        lastName: "Arten",
+        phoneNumber: "555-0184"
+      });
+
+      var aliceView = new ContactManager.ContactView({
+        model: alice
+      });
+
+      ContactManager.mainRegion.show(aliceView);
+      // console.log("This is ContactManager!");
+    });
+
+
+    ContactManager.start();
+    // console.log("This is fun 2!");
+  </script>
+</body>
+</html>
